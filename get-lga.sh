@@ -1,4 +1,10 @@
 #!/bin/bash
+# run script via cron after ~15:00 UTC but NOT TO OFTEN! Keep server load on the
+# target reasonable low. I usually run it every 4 minutes.
+# NOTE: this script stops when a new report has been found. In very rare cases, the
+# found report was incorrect, in which case the current file needs to be deleted
+# manually (plus some DB cleanup) in order to carry on.
+#
 cd /home/otherweb/scripts/lga-bericht
 source config.sh
 query_url() {
@@ -83,6 +89,7 @@ if [ ! -s "data/lgabw-$today.pdf" ]; then
 
 	if [[ $(date +%u) -gt 5 ]]; then
 		# Wochenende - unnötige Server Queries unter der Woche vermeiden
+		# Hinweis: Werktags-URL erscheinen auch am Wochenende, daher hier keine reduzierung möglich!
 		query_url https://www.baden-wuerttemberg.de/fileadmin/redaktion/dateien/PDF/Coronainfos/Corona_2022/${today}_COVID_Inzidenzbericht_Wochenende_LGA.pdf
 
 		query_url https://www.baden-wuerttemberg.de/fileadmin/redaktion/dateien/PDF/Coronainfos/${today}_COVID_Inzidenzbericht-Wochenende.pdf
