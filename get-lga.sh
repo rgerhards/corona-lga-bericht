@@ -26,8 +26,9 @@ query_url() {
 		php lga-gesamtinzidenz.php "$(date -I)" "$DATALINE"
 
 		# BaWü ITS, Hi-Inz etc -- abhängig vom Wochentag!
-		pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf  -|grep "Tage Hospitalisierungsinzidenz"
-		found=$?
+		#pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf  -|grep "Tage Hospitalisierungsinzidenz"
+		#found=$?
+		found=1 # aktuell haben wir keine Berichte am Wochende
 		if (( found == 0 )); then
 			echo Wochend-Verarbeitung!
 			DATALINE="$(pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf -\
@@ -38,9 +39,10 @@ query_url() {
 		else
 			echo "Normalverarbeitung (Werktag)"
 			DATALINE="$(pdftotext -raw -f 1 -l 1  data/lgabw-$today.pdf - \
-				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/[±∆°“]//g' -e 's/-/-/g' \
+				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/-/-/g' -e 's/[-±∆°“]//g' \
 				|tr -d '\n' \
-				|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g')"
+				|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g' \
+					-e 's/([+-0123456789]*)/:/g' -e 's/Vorwoche[%]*//g' )"
 			php lga-its-werktag.php "$(date -I)" "$DATALINE"
 		fi
 		
@@ -61,6 +63,7 @@ query_url() {
 export today="$(date +%y%m%d)" # shortcut - we also use $(date -I)!
 if [ ! -s "data/lgabw-$today.pdf" ]; then
 	query_url https://gesundheitsamt-bw.de/fileadmin/LGA/_DocumentLibraries/SiteCollectionDocuments/05_Service/LageberichtCOVID19/`date +%Y`-`date +%m`-`date +%d`_LGA_COVID19-Tagesbericht.pdf
+	query_url https://gesundheitsamt-bw.de/fileadmin/LGA/_DocumentLibraries/SiteCollectionDocuments/05_Service/LageberichtCOVID19/`date +%Y`-`date +%m`-`date +%d`_LGA_COVID19-Lagebericht.pdf
 	query_url https://www.baden-wuerttemberg.de/fileadmin/redaktion/dateien/PDF/Coronainfos/Corona_2022/${today}_LGA_COVID19-Lagebericht.pdf
 	query_url https://www.baden-wuerttemberg.de/fileadmin/redaktion/dateien/PDF/Coronainfos/${today}_COVID_Tagesbericht.pdf
 	query_url https://www.baden-wuerttemberg.de/fileadmin/redaktion/dateien/PDF/Coronainfos/${today}_COVID_Tagesbericht_LGA.pdf

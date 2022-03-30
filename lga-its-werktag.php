@@ -22,32 +22,40 @@ if ($argv[1] == "" || $argv[2] == "")
 $today = $conn->real_escape_string($argv[1]);
 echo $argv[2];
 
-#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologieTagesberichtCOVID-19Datenstand:Dienstag.2932022.16:00COVID-19-KennwerteBaden-WürttembergBestätigteFälle7-TageInzidenzCOVID-19-FälleaktuellaufITS1695.8(-50.4)267(-6)2993643(+34862)Vorwoche(1926.2)Vorwoche(241)AnteilCOVID-19-BelegungenGesamt-Verstorbene7-TageHospitalisierungsinzidenzzahlderbetreibbarenITS-Betten6.5(0.0)12.2%(-0.3%)15048(+43)Vorwoche(8.1)Vorwoche(11%)COVID-19-FälleaktuellaufNormal-GeneseneGeschätzter7-TagesR-Wertstation1996(-4)2202307(+22738)0.74(0.69–0.78)Vorwoche(1964)MindestenseinmalGeimpfteVollständigGeimpfteAuffrischimpfungen8211395(+356)8229952(+688)6319459(+2260)74.0%(Vorwoche+0.1%)"74.1%(Vorwoche+0.1%)"56.9%(Vorwoche+0.2%)
+#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologie1TagesberichtCOVID19Datenstand:Mittwoch.3032022.16:00COVID19KennwerteBadenWürttembergBestätigteFälle7TageInzidenzCOVID19FälleaktuellaufITS3030227:1638.8::261::Verstorbene7TageHospitalisierungsinzidenzAnteilCOVID19BelegungenGesamtzahlderbetreibbarenITSBetten15067:6.8::11.9%(0.3%)(11.4%)GeneseneGeschätzter7TagesRWertCOVID19FälleaktuellaufNormalstation2233467:0.80:2044::MindestenseinmalGeimpfteVollständigGeimpfteAuffrischimpfungen8211936:74.0%(+0.1%)"8231003:74.1%(+0%)"6322963:56.9%(+0.2%)
 
-preg_match("/"
-	. "7-TageHospitalisierungsinzidenzzahlderbetreibbarenITS-Betten"
-	. "([0-9.]*)\([0-9.]*\)"
-	. "([0-9.]*)%"
-	. "/" , $argv[2], $matches);
+if(preg_match("/"
+	. "zahlderbetreibbarenITSBetten"
+	. "([0-9.]*):"
+	. "([0-9.]*):"
+	. "/" , $argv[2], $matches)
+  == 0) {
+	preg_match("/"
+		. "zahlderbetreibbarenITSBetten"
+		. "([0-9.]*):"
+		. "([0-9.]*):"
+		. "/" , $argv[2], $matches);
+}
 print_r($matches);
 $hi_inz    = floatval($matches[1]);
 $its_anteil= floatval($matches[2]);
 
 preg_match("/"
-	. "GeneseneGeschätzter7-TagesR-Wertstation"
-	. "([0-9.]*)\([+-]*[0-9.]*\)"
-	. "([0-9]*)\([+-]*[0-9.]*\)"
-	. "([0-9.]*)\("
+	. "station"
+	. "([0-9]*):"
+	. "([0-9.]*):"
+	. "([0-9]*):"
 	. "/" , $argv[2], $matches);
 print_r($matches);
-$normalstation= intval($matches[1]);
-$genesene= intval($matches[2]);
-$r7 = floatval($matches[3]);
+$normalstation= intval($matches[3]);
+$genesene= intval($matches[1]);
+$r7 = floatval($matches[2]);
 
 preg_match("/"
-	. "7-TageInzidenzCOVID-19-FälleaktuellaufITS"
-	. "[0-9.]+\([+-]*[0-9.]+\)"
-	. "([0-9]*)\("
+	. "COVID19FälleaktuellaufITS"
+	. "[0-9]+:"
+	. "[0-9.]+::"
+	. "([0-9]*):"
 	. "/" , $argv[2], $matches);
 print_r($matches);
 $its_nbr   = intval($matches[1]);
