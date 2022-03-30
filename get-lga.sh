@@ -32,9 +32,9 @@ query_url() {
 		else
 			echo "Normalverarbeitung (Werktag)"
 			DATALINE="$(pdftotext -raw -f 1 -l 1  data/lgabw-$today.pdf - \
-				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/[∆°“]//g' \
+				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/[±∆°“]//g' -e 's/-/-/g' \
 				|tr -d '\n' \
-				|sed -e 's/Abkürzungen.*//' -e 's/\*//g')"
+				|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g')"
 			php lga-its-werktag.php "$(date -I)" "$DATALINE"
 		fi
 		
@@ -45,7 +45,7 @@ query_url() {
 		wp --path=/home/adisconweb/www/wordpress-mu  --url=https://www.rainer-gerhards.de \
 			w3-total-cache flush all --post_id=4609 # /coronavirus page
 
-		) |& mail -s "LGA Bericht $today" --attach "data/lgabw-$today.pdf" rgerhards@adiscon.com
+		) |& mail -s "LGA Bericht $today" --attach "data/lgabw-$today.pdf" $CORONA_MAIL_NOTIFY_ADDR
 		exit 0 # done
 	fi
 }
