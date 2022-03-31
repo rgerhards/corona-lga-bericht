@@ -20,43 +20,67 @@ if ($conn->connect_error) {
 if ($argv[1] == "" || $argv[2] == "")
 	die("usage date lga-string");
 $today = $conn->real_escape_string($argv[1]);
-echo $argv[2];
+echo $argv[2] . "\n\n";
 
-#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologie1TagesberichtCOVID19Datenstand:Mittwoch.3032022.16:00COVID19KennwerteBadenWürttembergBestätigteFälle7TageInzidenzCOVID19FälleaktuellaufITS3030227:1638.8::261::Verstorbene7TageHospitalisierungsinzidenzAnteilCOVID19BelegungenGesamtzahlderbetreibbarenITSBetten15067:6.8::11.9%(0.3%)(11.4%)GeneseneGeschätzter7TagesRWertCOVID19FälleaktuellaufNormalstation2233467:0.80:2044::MindestenseinmalGeimpfteVollständigGeimpfteAuffrischimpfungen8211936:74.0%(+0.1%)"8231003:74.1%(+0%)"6322963:56.9%(+0.2%)
+#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologieÄnderungengegenüberdemStandvomletztenBerichtwerdenblaudargestellt1LageberichtCOVID19DatenstandDonnerstag.31032022.16:00UhrCOVID19KennwerteBadenWürttembergBestätigteFälle3061043:7TageInzidenz1586.8::COVID19FälleaktuellaufITS265::Verstorbene15112:7TageHospitalisierungsinzidenz7.1::AnteilCOVID19BelegunganGesamtzahlderbetreibbarenITSBetten12.1::Genesene2266038:Geschätzter7TagesRWert0.83:COVID19FälleaktuellaufNormalstation2028::MindestenseinmalGeimpfte8212505:74.0(:+0.1)Grundimmunisiert8232298:74.1(:+0)Auffrischimpfungen6327134:57.0(:+0.2)
 
 if(preg_match("/"
-	. "zahlderbetreibbarenITSBetten"
+	. "7TageHospitalisierungsinzidenz"
 	. "([0-9.]*):"
+	. ".*zahlderbetreibbarenITSBetten"
 	. "([0-9.]*):"
 	. "/" , $argv[2], $matches)
-  == 0) {
-	preg_match("/"
+  == 0) if(preg_match("/"
 		. "zahlderbetreibbarenITSBetten"
 		. "([0-9.]*):"
 		. "([0-9.]*):"
-		. "/" , $argv[2], $matches);
-}
+		. "/" , $argv[2], $matches)
+  == 0)
+	die("ERROR: Regex klappt nicht bei hi_inz etc\n");
 print_r($matches);
 $hi_inz    = floatval($matches[1]);
 $its_anteil= floatval($matches[2]);
 
-preg_match("/"
-	. "station"
+if(preg_match("/"
+	. "Genesene"
 	. "([0-9]*):"
+	. ".*RWert"
+	. "([0-9.]*):"
+	. ".*station"
+	. "([0-9]*):"
+	. "/" , $argv[2], $matches)
+  == 1) {
+	print_r($matches);
+	$genesene= intval($matches[1]);
+	$r7 = floatval($matches[2]);
+	$normalstation= intval($matches[3]);
+} else if(preg_match("/"
+	. "station"
 	. "([0-9.]*):"
 	. "([0-9]*):"
-	. "/" , $argv[2], $matches);
-print_r($matches);
-$normalstation= intval($matches[3]);
-$genesene= intval($matches[1]);
-$r7 = floatval($matches[2]);
+	. "/" , $argv[2], $matches)
+  == 1) {
+	print_r($matches);
+	$genesene= intval($matches[1]);
+	$r7 = floatval($matches[2]);
+	$normalstation= intval($matches[3]);
+} else {
+	die("ERROR: Regex klappt nicht bei normalstation etc\n");
+}
 
-preg_match("/"
+if (preg_match("/"
+	. "COVID19FälleaktuellaufITS"
+	. "([0-9]*):"
+	. "/" , $argv[2], $matches) == 1) {
+} else if (preg_match("/"
 	. "COVID19FälleaktuellaufITS"
 	. "[0-9]+:"
 	. "[0-9.]+::"
 	. "([0-9]*):"
-	. "/" , $argv[2], $matches);
+	. "/" , $argv[2], $matches) == 1) {
+} else {
+	die("ERROR: Regex klappt nicht bei its_nbr etc\n");
+}
 print_r($matches);
 $its_nbr   = intval($matches[1]);
 
