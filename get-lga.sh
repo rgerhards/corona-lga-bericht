@@ -39,7 +39,7 @@ query_url() {
 		else
 			echo "Normalverarbeitung (Werktag)"
 			DATALINE="$(pdftotext -raw -f 1 -l 1  data/lgabw-$today.pdf - \
-				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/-/-/g' -e 's/[-±∆°“%]//g' \
+				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/-/-/g' -e 's/[-±∆°“"%]//g' \
 				|tr -d '\n' \
 				|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g' \
 					-e 's/([+-0123456789]*)/:/g' -e 's/Vorwoche*//g' )"

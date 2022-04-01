@@ -22,7 +22,7 @@ if ($argv[1] == "" || $argv[2] == "")
 $today = $conn->real_escape_string($argv[1]);
 echo $argv[2] . "\n\n";
 
-#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologieÄnderungengegenüberdemStandvomletztenBerichtwerdenblaudargestellt1LageberichtCOVID19DatenstandDonnerstag.31032022.16:00UhrCOVID19KennwerteBadenWürttembergBestätigteFälle3061043:7TageInzidenz1586.8::COVID19FälleaktuellaufITS265::Verstorbene15112:7TageHospitalisierungsinzidenz7.1::AnteilCOVID19BelegunganGesamtzahlderbetreibbarenITSBetten12.1::Genesene2266038:Geschätzter7TagesRWert0.83:COVID19FälleaktuellaufNormalstation2028::MindestenseinmalGeimpfte8212505:74.0(:+0.1)Grundimmunisiert8232298:74.1(:+0)Auffrischimpfungen6327134:57.0(:+0.2)
+#Referat73:Gesundheitsschutz.InfektionsschutzundEpidemiologie1TagesberichtCOVID19Datenstand:Freitag.01042022.16:00COVID19KennwerteBadenWürttembergBestätigteFälle7TageInzidenzCOVID19FälleaktuellaufITS3085574:1523.6::269::Verstorbene7TageHospitalisierungsinzidenzAnteilCOVID19BelegungenGesamtzahlderbetreibbarenITSBetten15141:7.4::12.3::GeneseneGeschätzter7TagesRWertCOVID19FälleaktuellaufNormalstation2298755:0.87:1996::MindestenseinmalGeimpfteVollständigGeimpfteAuffrischimpfungen8213240:74.0(+0.1)8233840:74.2(+0.1)6332323:57.0(+0.2)
 
 if(preg_match("/"
 	. "7TageHospitalisierungsinzidenz"
@@ -56,6 +56,7 @@ if(preg_match("/"
 	$normalstation= intval($matches[3]);
 } else if(preg_match("/"
 	. "station"
+	. "([0-9]*):"
 	. "([0-9.]*):"
 	. "([0-9]*):"
 	. "/" , $argv[2], $matches)
