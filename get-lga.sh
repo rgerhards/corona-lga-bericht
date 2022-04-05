@@ -25,26 +25,29 @@ query_url() {
 		echo DATALINE: $DATALINE
 		php lga-gesamtinzidenz.php "$(date -I)" "$DATALINE"
 
+		# Leider funktioniert das scraping gar nicht, da das LGA laufend das Format
+		# ändert. Etwas generellere Regexe führen dann u.U. sogar dazu, dass komplett
+		# falsche Daten übernommen werden. Daher lassen wir es lieber ganz.
 		# BaWü ITS, Hi-Inz etc -- abhängig vom Wochentag!
 		#pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf  -|grep "Tage Hospitalisierungsinzidenz"
 		#found=$?
-		found=1 # aktuell haben wir keine Berichte am Wochende
-		if (( found == 0 )); then
-			echo Wochend-Verarbeitung!
-			DATALINE="$(pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf -\
-				|grep "Tage Hospitalisierungsinzidenz" \
-				|sed -e 's/^[^:]*: //' -e 's/COVID-.*: //' -e 's/(.*)//' -e 's/,/./' -e 's/  */,/')"
-			echo DATALINE: $DATALINE
-			php lga-its-weekend.php "$(date -I)" "$DATALINE"
-		else
-			echo "Normalverarbeitung (Werktag)"
-			DATALINE="$(pdftotext -raw -f 1 -l 1  data/lgabw-$today.pdf - \
-				|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/-/-/g' -e 's/[-±∆°“"%]//g' \
-				|tr -d '\n' \
-				|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g' \
-					-e 's/([+-0123456789]*)/:/g' -e 's/Vorwoche*//g' )"
-			php lga-its-werktag.php "$(date -I)" "$DATALINE"
-		fi
+		#found=1 # aktuell haben wir keine Berichte am Wochende
+		#if (( found == 0 )); then
+		#	echo Wochend-Verarbeitung!
+		#	DATALINE="$(pdftotext -f 1 -l 1 -layout data/lgabw-$today.pdf -\
+		#		|grep "Tage Hospitalisierungsinzidenz" \
+		#		|sed -e 's/^[^:]*: //' -e 's/COVID-.*: //' -e 's/(.*)//' -e 's/,/./' -e 's/  */,/')"
+		#	echo DATALINE: $DATALINE
+		#	php lga-its-weekend.php "$(date -I)" "$DATALINE"
+		#else
+		#	echo "Normalverarbeitung (Werktag)"
+		#	DATALINE="$(pdftotext -raw -f 1 -l 1  data/lgabw-$today.pdf - \
+		#		|sed -e 's/\.//g' -e 's/,/./g' -e 's/$/ /' -e 's/-/-/g' -e 's/[-±∆°“"%]//g' \
+		#		|tr -d '\n' \
+		#		|sed -e 's/Abkürzungen.*//' -e 's/\*//g' -e 's/ //g' \
+		#			-e 's/([+-0123456789]*)/:/g' -e 's/Vorwoche*//g' )"
+		#	php lga-its-werktag.php "$(date -I)" "$DATALINE"
+		#fi
 		
 		# generate today's posting (but not yet publish it!)
 		(cd ..; tbb/gen_chart.sh)

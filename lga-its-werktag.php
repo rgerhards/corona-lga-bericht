@@ -119,7 +119,6 @@ $strSql = "UPDATE bw_mutationen
                 where datum = '$today'
 	  ";
 echo "LGA Step 2/Wochentag: $strSql\n";
-die();
 if ($conn->query($strSql) === FALSE) {
 	echo "Warning: $strSql \na{$conn->error}\nNOT Aborting - maybe already manually entered?\n";
 }
